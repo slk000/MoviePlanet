@@ -1,18 +1,28 @@
 package main
 
 import (
+	"movie_planet/api/controller"
+	"movie_planet/api/repo"
+	"movie_planet/api/routes"
+	"movie_planet/api/service"
 	"movie_planet/infra"
-	"net/http"
-
-	"github.com/gin-gonic/gin"
+	"movie_planet/models"
 )
 
+func init() {
+	infra.LoadEnv()
+}
+
 func main() {
-	router := gin.Default()
-	router.GET("/", func(context *gin.Context) {
-		infra.LoadEnv()
-		infra.NewDatabase()
-		context.JSON(http.StatusOK, gin.H{"data": "hello world"})
-	})
-	router.Run(":80")
+	router := infra.NewGinRouter()
+	db := infra.NewDatabase()
+
+	movieRepo := repo.NewMovieRepo(db)
+	movieService := service.NewMovieService(movieRepo)
+	movieController := controller.NewMovieController(movieService)
+	movieRoute := routes.NewMovieRoute(movieController, router)
+	movieRoute.Setup()
+
+	db.DB.AutoMigrate(&models.Movie{})
+	router.Gin.Run(":80")
 }
