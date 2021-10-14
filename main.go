@@ -23,6 +23,12 @@ func main() {
 	movieRoute := routes.NewMovieRoute(movieController, router)
 	movieRoute.Setup()
 
-	db.DB.AutoMigrate(&models.Movie{})
+	userRepo := repo.NewUserRepo(db)
+	userService := service.NewUserService(userRepo)
+	userController := controller.NewUserController(userService)
+	userRoute := routes.NewUserRoute(userController, router)
+	userRoute.Setup()
+
+	db.DB.AutoMigrate(&models.Movie{}, &models.User{})
 	router.Gin.Run(":80")
 }
