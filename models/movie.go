@@ -6,6 +6,9 @@ type Movie struct {
 	ID        int64     `gorm:"primary_key;auto_increment" json:"id"`
 	Name      string    `json:"name"`
 	Genres    string    `json:"genres"`
+	PosterURL string    `json:"poster"`
+	Directors string    `json:"directors"`
+	Actors    string    `json:"actors"`
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 }
@@ -19,5 +22,7 @@ func (movie *Movie) ResponseMap() map[string]interface{} {
 	response["id"] = movie.ID
 	response["name"] = movie.Name
 	response["genres"] = movie.Genres
+	response["poster"] = movie.PosterURL
+	response["director"] = movie.Directors
 	return response
 }
