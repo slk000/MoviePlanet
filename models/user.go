@@ -1,6 +1,10 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"github.com/golang-jwt/jwt"
+)
 
 type User struct {
 	ID        int64     `gorm:"primary_key;auto_increment" json:"id"`
@@ -18,6 +22,10 @@ func (user *User) TableName() string {
 type UserLogin struct {
 	Email    string `form:"email" binding:"required"`
 	Password string `form:"password" binding:"required"`
+}
+type UserClaims struct {
+	User
+	jwt.StandardClaims
 }
 
 type UserRegister struct {

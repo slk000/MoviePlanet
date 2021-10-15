@@ -3,6 +3,7 @@ package routes
 import (
 	"movie_planet/api/controller"
 	"movie_planet/infra"
+	"movie_planet/middlewares"
 )
 
 type UserRoute struct {
@@ -18,9 +19,14 @@ func NewUserRoute(controller controller.UserController, handler infra.GinRouter)
 }
 
 func (u UserRoute) Setup() {
-	user := u.Handler.Gin.Group("/auth")
+	userAuth := u.Handler.Gin.Group("/auth")
 	{
-		user.POST("/register", u.Controller.CreateUser)
-		user.POST("/login", u.Controller.LoginUser)
+		userAuth.POST("/register", u.Controller.CreateUser)
+		userAuth.POST("/login", u.Controller.LoginUser)
+	}
+
+	user := u.Handler.Gin.Group("/user")
+	{
+		user.GET("/", middlewares.AuthMiddleware(), u.Controller.UserInfo)
 	}
 }

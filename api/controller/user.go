@@ -6,7 +6,6 @@ import (
 	"movie_planet/util"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
@@ -43,7 +42,7 @@ func (u *UserController) CreateUser(c *gin.Context) {
 
 func (u *UserController) LoginUser(c *gin.Context) {
 	var user models.UserLogin
-	var hmacSampleSecret = []byte(os.Getenv("SECRET_TOKEN"))
+	var hmacSecret = []byte(os.Getenv("SECRET_TOKEN"))
 	err := c.ShouldBind(&user)
 	if err != nil {
 		util.ErrorJson(c, http.StatusBadRequest, "Failed")
@@ -54,11 +53,14 @@ func (u *UserController) LoginUser(c *gin.Context) {
 		util.ErrorJson(c, http.StatusBadRequest, "Invalid Login Credentials")
 		return
 	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"user": dbUser,
-		"exp":  time.Now().Add(time.Minute * 15).Unix(),
+	// token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+	// 	"user": dbUser,
+	// 	"exp":  time.Now().Add(time.Minute * 15).Unix(),
+	// })
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, models.UserClaims{
+		User: *dbUser,
 	})
-	tokenString, err := token.SignedString(hmacSampleSecret)
+	tokenString, err := token.SignedString(hmacSecret)
 	if err != nil {
 		util.ErrorJson(c, http.StatusBadRequest, "Failed getting token")
 		return
@@ -69,4 +71,10 @@ func (u *UserController) LoginUser(c *gin.Context) {
 		Data:    tokenString,
 	}
 	c.JSON(http.StatusOK, response)
+}
+
+func (u *UserController) UserInfo(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"data": c.MustGet("email").(string),
+	})
 }
