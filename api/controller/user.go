@@ -29,9 +29,6 @@ func (u *UserController) CreateUser(c *gin.Context) {
 		return
 	}
 
-	hashPassword, _ := util.HashPassword(user.Password)
-	user.Password = hashPassword
-
 	err = u.service.CreateUser(user)
 	if err != nil {
 		util.ErrorJson(c, http.StatusBadRequest, "Failed creating user")
