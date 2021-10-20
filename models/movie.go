@@ -23,6 +23,8 @@ func (movie *Movie) ResponseMap() map[string]interface{} {
 	response["name"] = movie.Name
 	response["genres"] = movie.Genres
 	response["poster"] = movie.PosterURL
-	response["director"] = movie.Directors
+	response["directors"] = movie.Directors
+	response["actors"] = movie.Actors
+
 	return response
 }
